@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Interactiva de Seguridad del Soldador - DataFlowIA</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Degradado azul morado */
+            background-attachment: fixed; /* Asegura que el degradado cubra toda la página */
+            color: #e0e7ff; /* Texto general más claro para el fondo oscuro */
+        }
+        h1, h2, h3 {
+            color: #f0f2f5; /* Títulos más claros */
+        }
+        .text-slate-900 {
+            color: #f0f2f5; /* Sobreescribir colores de Tailwind para títulos */
+        }
+        .text-gray-700 {
+            color: #d1d8e0; /* Texto de párrafo más claro */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .details-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        .details-content.open {
+            max-height: 1000px; /* Suficientemente grande para el contenido */
+            transition: max-height 0.7s ease-in;
+        }
+
+        /* Estilos para las tarjetas/cajones con sombra y animación */
+        .interactive-card {
+            background-color: rgba(255, 255, 255, 0.1); /* Fondo blanco translúcido */
+            border: 1px solid rgba(255, 255, 255, 0.2); /* Borde suave */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .interactive-card:hover {
+            transform: translateY(-5px); /* Animación al pasar el ratón */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4); /* Sombra más intensa al pasar el ratón */
+        }
+
+        /* Ajustes para colores de texto dentro de las tarjetas */
+        .interactive-card h3 {
+            color: #f9d71c; /* Color amarillo/ámbar para los títulos de las tarjetas */
+        }
+        .interactive-card .toggle-icon {
+            color: #f9d71c; /* Color amarillo/ámbar para los iconos de alternancia */
+        }
+        .interactive-card p, .interactive-card ul, .interactive-card li {
+            color: #e0e7ff; /* Texto general dentro de las tarjetas */
+        }
+        .interactive-card h4 {
+            color: #ffeb3b; /* Color un poco más claro para subtítulos dentro de tarjetas */
+        }
+
+        /* Navegación */
+        .nav-link {
+            color: #e0e7ff; /* Color de texto para los enlaces de navegación */
+        }
+        .nav-link:hover {
+            color: #f9d71c; /* Color amarillo al pasar el ratón */
+        }
+        .nav-brand {
+            color: #f9d71c; /* Color del logo en la barra de navegación */
+        }
+
+        /* Botones y elementos de interacción */
+        .text-amber-600 { /* Títulos del EPP */
+            color: #f9d71c;
+        }
+        .text-blue-700 { /* Títulos de las normas */
+            color: #8be9fd; /* Un azul cian para contraste */
+        }
+        .text-blue-600 { /* Iconos de las normas */
+            color: #8be9fd;
+        }
+
+        /* Estilo para el footer */
+        footer {
+            background-color: rgba(0, 0, 0, 0.3); /* Fondo translúcido oscuro */
+            color: #e0e7ff; /* Texto claro */
+        }
+        footer a {
+            color: #f9d71c; /* Enlaces del footer amarillos */
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-slate-800">
+
+    <nav class="sticky top-0 z-50 bg-white shadow-md w-full" style="background-color: rgba(255, 255, 255, 0.15); backdrop-filter: blur(5px);">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0 flex items-center">
+                    <span class="text-2xl font-bold nav-brand">🛡️ Soldador Seguro</span>
+                </div>
+                <div class="hidden sm:block sm:ml-6">
+                    <div class="flex space-x-4">
+                        <a href="#home" class="px-3 py-2 rounded-md text-sm font-medium nav-link">Inicio</a>
+                        <a href="#risks" class="px-3 py-2 rounded-md text-sm font-medium nav-link">Riesgos</a>
+                        <a href="#epp" class="px-3 py-2 rounded-md text-sm font-medium nav-link">EPP</a>
+                        <a href="#norms" class="px-3 py-2 rounded-md text-sm font-medium nav-link">Normas</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <section id="home" class="text-center mb-16">
+            <h1 class="text-4xl font-bold mb-4">Guía Interactiva de Seguridad del Soldador</h1>
+            <p class="text-lg max-w-3xl mx-auto">
+                La soldadura implica riesgos significativos por humos, radiación, chispas y calor. Esta guía interactiva detalla el EPP y las normas obligatorias para prevenir lesiones graves y garantizar un entorno de trabajo seguro.
+            </p>
+        </section>
+
+        <section id="risks" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4">Visualización de Riesgos Comunes</h2>
+            <p class="text-md max-w-2xl mx-auto text-center mb-8">
+                Comprender los peligros más frecuentes es el primer paso para prevenirlos. Este gráfico muestra las causas más comunes de lesiones en soldadura, destacando por qué el EPP y las normas son cruciales.
+            </p>
+            <div class="bg-white p-6 rounded-lg shadow-xl" style="background-color: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);">
+                <div class="chart-container">
+                    <canvas id="riskChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="epp" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4">Tu Armadura: EPP Obligatorio</h2>
+            <p class="text-md max-w-2xl mx-auto text-center mb-8">
+                El EPP es su primera y más importante línea de defensa. Cada pieza está diseñada para protegerlo de un peligro específico. Haga clic en cada categoría para ver los detalles del equipo requerido.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <div class="rounded-lg overflow-hidden interactive-card">
+                    <div class="p-6 cursor-pointer flex justify-between items-center">
+                        <h3 class="text-xl font-semibold">👁️ Protección Ocular y Facial</h3>
+                        <span class="text-2xl font-bold toggle-icon">+</span>
+                    </div>
+                    <div class="details-content px-6 pb-6 space-y-4">
+                        <div>
+                            <h4 class="font-semibold">1. Casco de Soldadura (Careta)</h4>
+                            <ul class="list-disc list-inside ml-4 text-sm">
+                                <li><strong>Función:</strong> Proteger ojos, cara y cuello de luz intensa (arco), chispas, salpicaduras y radiación UV/IR.</li>
+                                <li><strong>Recomendación:</strong> Usar filtros de oscurecimiento automático (sombra DIN 10-13) de activación inmediata.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold">2. Gafas de Seguridad o Monogafas</h4>
+                            <ul class="list-disc list-inside ml-4 text-sm">
+                                <li><strong>Función:</strong> Usar siempre debajo del casco, y durante operaciones de esmerilado, picado o cepillado de escoria.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-lg overflow-hidden interactive-card">
+                    <div class="p-6 cursor-pointer flex justify-between items-center">
+                        <h3 class="text-xl font-semibold">🧤 Protección de Manos y Cuerpo</h3>
+                        <span class="text-2xl font-bold toggle-icon">+</span>
+                    </div>
+                    <div class="details-content px-6 pb-6 space-y-4">
+                        <div>
+                            <h4 class="font-semibold">1. Guantes de Soldadura</h4>
+                            <ul class="list-disc list-inside ml-4 text-sm">
+                                <li><strong>Función:</strong> Proteger manos y muñecas de calor, chispas, quemaduras y choque eléctrico.</li>
+                                <li><strong>Recomendación:</strong> Guantes de cuero tipo "manga larga", resistentes al fuego y adecuados al proceso (TIG, MIG, Electrodo).</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold">2. Ropa de Protección</h4>
+                            <ul class="list-disc list-inside ml-4 text-sm">
+                                <li><strong>Material:</strong> Cuero o materiales resistentes e ignífugos (algodón tratado).</li>
+                                <li><strong>Elementos:</strong> Chaqueta, mandil o peto.</li>
+                                <li><strong>Prohibido:</strong> Ropa sintética, grasosa, o con puños/bolsillos donde se acumulen chispas.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-lg overflow-hidden interactive-card">
+                    <div class="p-6 cursor-pointer flex justify-between items-center">
+                        <h3 class="text-xl font-semibold">🥾 Protección de Pies</h3>
+                        <span class="text-2xl font-bold toggle-icon">+</span>
+                    </div>
+                    <div class="details-content px-6 pb-6 space-y-4">
+                        <div>
+                            <h4 class="font-semibold">1. Botas de Seguridad</h4>
+                            <ul class="list-disc list-inside ml-4 text-sm">
+                                <li><strong>Características:</strong> De cuero, caña alta, con puntera de acero (protección contra caída de objetos).</li>
+                                <li><strong>Suelas:</strong> Resistentes al deslizamiento y al calor.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-lg overflow-hidden interactive-card">
+                    <div class="p-6 cursor-pointer flex justify-between items-center">
+                        <h3 class="text-xl font-semibold">🌬️ Protección Respiratoria</h3>
+                        <span class="text-2xl font-bold toggle-icon">+</span>
+                    </div>
+                    <div class="details-content px-6 pb-6 space-y-4">
+                        <div>
+                            <h4 class="font-semibold">1. Mascarilla/Respirador</h4>
+                            <ul class="list-disc list-inside ml-4 text-sm">
+                                <li><strong>Función:</strong> Proteger contra humos y gases tóxicos (óxidos de metal, ozono) generados al fundir metales.</li>
+                                <li><strong>Recomendación:</strong> La ventilación local es prioritaria. Usar respiradores con filtros para humos metálicos en espacios confinados o al soldar metales revestidos (zinc, cadmio).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="norms" class="scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4">Normas de Seguridad: Checklist Interactivo</h2>
+            <p class="text-md max-w-2xl mx-auto text-center mb-8">
+                Antes de encender el arco, revise siempre su entorno. Estas normas previenen los accidentes más graves. Haga clic en cada riesgo para expandir la lista de verificación.
+            </p>
+            <div class="space-y-4">
+
+                <div class="rounded-lg overflow-hidden interactive-card">
+                    <div class="p-6 cursor-pointer flex justify-between items-center">
+                        <h3 class="text-xl font-semibold text-blue-700">💨 Ventilación y Humos</h3>
+                        <span class="text-2xl font-bold toggle-icon">+</span>
+                    </div>
+                    <div class="details-content px-6 pb-6">
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong>Ventilación Obligatoria:</strong> Usar extracción local forzada. Es la primera línea de defensa.</li>
+                            <li><strong>Posición:</strong> Mantener siempre la cabeza fuera de la columna de humos.</li>
+                            <li><strong>Identificación de Materiales:</strong> Nunca soldar materiales con pinturas, plásticos o recubrimientos desconocidos sin limpiarlos; pueden liberar gases tóxicos.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="rounded-lg overflow-hidden interactive-card">
+                    <div class="p-6 cursor-pointer flex justify-between items-center">
+                        <h3 class="text-xl font-semibold text-blue-700">🔥 Prevención de Incendios y Explosiones</h3>
+                        <span class="text-2xl font-bold toggle-icon">+</span>
+                    </div>
+                    <div class="details-content px-6 pb-6">
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong>Permiso de Trabajo Caliente:</strong> Requerido si se suelda fuera de un área designada.</li>
+                            <li><strong>Área Libre de Combustibles:</strong> Limpiar materiales inflamables (papel, madera, solventes) en un radio de al menos <strong>10 metros</strong>. Usar barreras ignífugas si no es posible.</li>
+                            <li><strong>Extintores:</strong> Deben estar operativos, apropiados (ABC o CO2) y fácilmente accesibles.</li>
+                            <li><strong>Supervisión (Fire Watch):</strong> Monitorear la zona por un observador de incendios al menos 30 minutos después de finalizar, ya que los incendios pueden ser tardíos.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="rounded-lg overflow-hidden interactive-card">
+                    <div class="p-6 cursor-pointer flex justify-between items-center">
+                        <h3 class="text-xl font-semibold text-blue-700">⚡ Riesgo Eléctrico</h3>
+                        <span class="text-2xl font-bold toggle-icon">+</span>
+                    </div>
+                    <div class="details-content px-6 pb-6">
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong>Aislamiento y Tierra:</strong> Asegurar que todos los equipos estén correctamente conectados a tierra. La pinza de retorno debe tener buen contacto.</li>
+                            <li><strong>Condiciones Secas:</strong> No soldar nunca en condiciones húmedas o mojadas. El EPP (guantes, botas) debe estar seco.</li>
+                            <li><strong>Inspección de Cables:</strong> Revisar cables y aislamiento de antorchas antes de cada uso. Desechar cables pelados o dañados.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="rounded-lg overflow-hidden interactive-card">
+                    <div class="p-6 cursor-pointer flex justify-between items-center">
+                        <h3 class="text-xl font-semibold text-blue-700">⚠️ Cilindros de Gas Comprimido</h3>
+                        <span class="text-2xl font-bold toggle-icon">+</span>
+                    </div>
+                    <div class="details-content px-6 pb-6">
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong>Almacenamiento:</strong> Guardar en posición vertical y asegurados con cadenas o correas para evitar caídas.</li>
+                            <li><strong>Separación:</strong> Los cilindros de Oxígeno deben almacenarse separados de los combustibles (Acetileno) por al menos 6 metros o una barrera ignífuga.</li>
+                            <li><strong>Válvulas:</strong> Siempre usar reguladores de presión. Proteger las válvulas con sus tapas cuando no estén en uso.</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="mt-16 py-8">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p>
+                <a href="https://www.dataflowia.com" target="_blank" rel="noopener noreferrer">www.dataflowia.com</a> | 
+                <a href="mailto:contacto@dataflowia.com">contacto@dataflowia.com</a>
+            </p>
+            <p>&copy; 2025 DataFlowIA. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const riskData = {
+                labels: ['Quemaduras (Térmicas/UV)', 'Lesión Ocular (Arco/Partículas)', 'Exposición a Humos/Gases', 'Choque Eléctrico', 'Incendios y Explosiones'],
+                datasets: [{
+                    label: 'Frecuencia de Accidentes (%)',
+                    data: [45, 25, 20, 5, 5],
+                    backgroundColor: [
+                        'rgba(249, 215, 28, 0.7)', /* Amarillo brillante para quemaduras */
+                        'rgba(255, 159, 64, 0.7)', /* Naranja para lesiones oculares */
+                        'rgba(142, 128, 202, 0.7)', /* Azul-púrpura para humos */
+                        'rgba(75, 192, 192, 0.7)', /* Turquesa para choque eléctrico */
+                        'rgba(255, 99, 132, 0.7)'  /* Rojo para incendios */
+                    ],
+                    borderColor: [
+                        'rgba(249, 215, 28, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(142, 128, 202, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            };
+
+            const ctx = document.getElementById('riskChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: riskData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Porcentaje de Frecuencia (%)',
+                                color: '#e0e7ff' /* Color de texto del título del eje X */
+                            },
+                            ticks: {
+                                color: '#e0e7ff' /* Color de las etiquetas del eje X */
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.2)' /* Color de la rejilla del eje X */
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#e0e7ff' /* Color de las etiquetas del eje Y */
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.2)' /* Color de la rejilla del eje Y */
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Fuentes Comunes de Accidentes de Soldadura',
+                            font: {
+                                size: 16
+                            },
+                            color: '#f0f2f5' /* Color del título del gráfico */
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const interactiveCards = document.querySelectorAll('.interactive-card');
+            interactiveCards.forEach(card => {
+                const header = card.querySelector('.cursor-pointer');
+                const content = card.querySelector('.details-content');
+                const icon = card.querySelector('.toggle-icon');
+
+                if (header && content && icon) {
+                    header.addEventListener('click', () => {
+                        const isOpen = content.classList.toggle('open');
+                        icon.textContent = isOpen ? '−' : '+';
+                        // Ajusta max-height dinámicamente para la transición
+                        if (isOpen) {
+                            content.style.maxHeight = content.scrollHeight + "px";
+                        } else {
+                            content.style.maxHeight = null;
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
